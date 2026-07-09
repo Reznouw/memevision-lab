@@ -11,7 +11,10 @@
   {
     "id": "absolute_cinema",
     "name": "Absolute Cinema",
-    "triggers": ["open_palm", "both_palms"],
+    "triggers": [
+      "open_palm",
+      "both_palms"
+    ],
     "asset": "local_assets/memes/hands/absolute_cinema.gif",
     "sound": null,
     "input_type": "hand",
@@ -30,7 +33,10 @@
   {
     "id": "tralalelo",
     "name": "Tralalelo",
-    "triggers": ["open_palm", "both_palms"],
+    "triggers": [
+      "open_palm",
+      "both_palms"
+    ],
     "asset": "local_assets/memes/hands/tralalelo.gif",
     "sound": null,
     "input_type": "hand",
@@ -54,5 +60,14 @@
     "input_type": "hand",
     "cooldown_seconds": 3,
     "category": "brainrot"
+  },
+  {
+    "id": "the_rock_stop",
+    "name": "the_rock_stop",
+    "asset": "local_assets/memes/hands/the_rock_stop.gif",
+    "sound": "local_assets/sounds/hands/the_rock_stop.mp3",
+    "input_type": "hand",
+    "cooldown_seconds": 1.0,
+    "category": "reaction"
   }
 ]

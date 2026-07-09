@@ -26,7 +26,7 @@ def test_loads_nested_trigger_configs_and_infers_missing_trigger(tmp_path):
     assert engine.memes[0].triggers == ("thumbs_up",)
 
 
-def test_update_many_respects_mode_allowed_ids_and_limit():
+def test_update_many_respects_mode_allowed_ids_and_limit(monkeypatch):
     memes = [
         _meme("hand_one", "thumbs_up", "hand"),
         _meme("hand_two", "thumbs_up", "hand"),
@@ -37,10 +37,28 @@ def test_update_many_respects_mode_allowed_ids_and_limit():
         active_input_type="hand",
         allowed_meme_ids={"hand_one", "hand_two", "face_one"},
     )
+    monkeypatch.setattr("memevision_lab.core.meme_reactions.random.shuffle", lambda _items: None)
 
     reactions = engine.update_many("thumbs_up", limit=1, now=10.0)
 
     assert [reaction.meme.id for reaction in reactions] == ["hand_one"]
+
+
+def test_update_many_randomizes_candidates_for_same_trigger(monkeypatch):
+    memes = [
+        _meme("hand_one", "open_palm", "hand"),
+        _meme("hand_two", "open_palm", "hand"),
+    ]
+    engine = MemeReactionEngine(memes, active_input_type="hand")
+
+    def reverse_candidates(candidates):
+        candidates.reverse()
+
+    monkeypatch.setattr("memevision_lab.core.meme_reactions.random.shuffle", reverse_candidates)
+
+    reactions = engine.update_many("open_palm", limit=1, now=10.0)
+
+    assert [reaction.meme.id for reaction in reactions] == ["hand_two"]
 
 
 def _meme(meme_id: str, trigger: str, input_type: str):

@@ -142,6 +142,9 @@ class MemeReactionEngine:
             self.active_many = []
             return []
 
+        candidates = candidates[:]
+        random.shuffle(candidates)
+
         active_by_id = {reaction.meme.id: reaction for reaction in self.active_many if now <= reaction.expires_at}
         reactions: list[ActiveMemeReaction] = []
         for meme in candidates[:limit]:
