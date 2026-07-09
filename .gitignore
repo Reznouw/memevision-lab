@@ -24,4 +24,16 @@ captures/
 *.log
 local_assets/**/*
 !local_assets/README.md
+!local_assets/memes/
+!local_assets/memes/**/
+!local_assets/memes/**/*.gif
+!local_assets/memes/**/*.png
+!local_assets/memes/**/*.jpg
+!local_assets/memes/**/*.jpeg
+!local_assets/memes/**/*.webp
+!local_assets/sounds/
+!local_assets/sounds/**/
+!local_assets/sounds/**/*.mp3
+!local_assets/sounds/**/*.wav
+!local_assets/sounds/**/*.ogg
 !local_assets/**/.gitkeep
