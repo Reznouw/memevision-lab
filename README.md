@@ -151,6 +151,8 @@ See `docs/ADDING_MEMES.md` for meme contributions and `docs/CONTRIBUTING_CODE.md
 
 The `Meme Reactions` card also includes `Add Meme`, which writes a new entry to `configs/memes/by_trigger/<trigger>.json` from inside the app.
 
+The public repository intentionally does not include meme GIFs or sounds. If a configured asset is missing, the app shows a clear placeholder instead of failing. Add your own local files under `local_assets/` to enable the real meme output.
+
 ## Why PySide6?
 
 MemeVision Lab needs a real desktop UI, video preview, a plugin catalog, styling,

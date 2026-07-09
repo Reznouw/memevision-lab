@@ -325,11 +325,10 @@ class MainWindow(QMainWindow):
 
     def _available_meme_choices(self) -> list[MemeReaction]:
         engine = MemeReactionEngine.from_config(self.project_root / "configs" / "memes")
-        usable = [meme for meme in engine.memes if meme.asset and (self.project_root / meme.asset).exists()]
         default_ids = {"thumbs_up_cat", "macaco_peace", "macaco_pointing", "absolute_cinema"}
 
         def sort_key(meme: MemeReaction) -> tuple[int, int, int, str]:
-            has_asset = bool(meme.asset and (self.project_root / meme.asset).exists())
+            has_asset = self._meme_asset_exists(meme)
             return (
                 0 if meme.id in default_ids else 1,
                 0 if has_asset else 1,
@@ -337,11 +336,20 @@ class MainWindow(QMainWindow):
                 meme.name,
             )
 
-        return sorted(usable, key=sort_key)
+        return sorted(engine.memes, key=sort_key)
 
     def _meme_choice_label(self, meme: MemeReaction) -> str:
         triggers = ", ".join(meme.triggers[:2])
-        return f"{meme.name} - {triggers} ({meme.input_type})"
+        status = "" if self._meme_asset_exists(meme) else " - asset missing"
+        return f"{meme.name} - {triggers} ({meme.input_type}){status}"
+
+    def _meme_asset_exists(self, meme: MemeReaction) -> bool:
+        if not meme.asset:
+            return False
+        asset_path = Path(meme.asset)
+        if not asset_path.is_absolute():
+            asset_path = self.project_root / asset_path
+        return asset_path.exists()
 
     def _open_meme_config_dialog(self) -> None:
         dialog = QDialog(self)
