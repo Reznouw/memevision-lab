@@ -87,6 +87,7 @@
 
 - In progress: motion sample recorder with `3 2 1` countdown.
 - In progress: saves one-second landmark samples to `configs/gestures/motion/`.
+- Done: recorder controls live in a dedicated `Gesture Recorder` sidebar section.
 - Next: link a recorded gesture sample to an image/audio asset.
 - Next: record multiple samples per gesture and summarize movement features.
 - Later: hands and face recorder modes.

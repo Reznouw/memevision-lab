@@ -14,6 +14,7 @@ Current alpha status:
 - PySide6 desktop shell
 - Dark QSS theme
 - Home, project catalog, and session console screens
+- Dedicated Gesture Recorder screen for landmark sample capture
 - Plugin manifest discovery
 - Starter `meme_reactions` plugin
 - Meme configs organized by trigger under `configs/memes/by_trigger/`

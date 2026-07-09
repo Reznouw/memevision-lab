@@ -117,6 +117,7 @@ class MainWindow(QMainWindow):
         self.output_count_input: QSpinBox | None = None
         self.motion_gesture_id_input: QLineEdit | None = None
         self.record_motion_button: QPushButton | None = None
+        self.recorder_status_label: QLabel | None = None
         self.record_countdown_remaining = 0
         self.recording_deadline: float | None = None
         self.gesture_recorder: GestureSampleRecorder | None = None
@@ -126,9 +127,11 @@ class MainWindow(QMainWindow):
         self.home_page = self._build_home_page()
         self.catalog_page = self._build_catalog_page()
         self.session_page = self._build_session_page()
+        self.recorder_page = self._build_gesture_recorder_page()
         self.stack.addWidget(self.home_page)
         self.stack.addWidget(self.catalog_page)
         self.stack.addWidget(self.session_page)
+        self.stack.addWidget(self.recorder_page)
 
         root = QWidget()
         root_layout = QHBoxLayout(root)
@@ -160,6 +163,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._nav_button("Home", 0))
         layout.addWidget(self._nav_button("Project Catalog", 1))
         layout.addWidget(self._nav_button("Session Console", 2))
+        layout.addWidget(self._nav_button("Gesture Recorder", 3))
         layout.addStretch()
 
         status = QFrame()
@@ -623,17 +627,6 @@ class MainWindow(QMainWindow):
         self.debug_landmarks_toggle.stateChanged.connect(self._on_debug_landmarks_changed)
         controls_layout.addWidget(self.debug_landmarks_toggle)
 
-        recorder_row = QHBoxLayout()
-        recorder_row.addWidget(self._small_label("Motion Gesture ID", "TinyText"))
-        self.motion_gesture_id_input = QLineEdit("my_motion_gesture")
-        self.motion_gesture_id_input.setPlaceholderText("snake_case id")
-        self.record_motion_button = QPushButton("Record Motion Sample")
-        self.record_motion_button.setObjectName("SecondaryButton")
-        self.record_motion_button.clicked.connect(self._start_motion_recording_countdown)
-        recorder_row.addWidget(self.motion_gesture_id_input, 1)
-        recorder_row.addWidget(self.record_motion_button)
-        controls_layout.addLayout(recorder_row)
-
         camera_row = QHBoxLayout()
         camera_row.addWidget(self._small_label("Camera Index", "TinyText"))
         camera_row.addStretch()
@@ -675,6 +668,66 @@ class MainWindow(QMainWindow):
         self.timeline_label.setWordWrap(True)
         log_layout.addWidget(self.timeline_label)
         layout.addWidget(log)
+        layout.addStretch()
+        return page
+
+    def _build_gesture_recorder_page(self) -> QWidget:
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        layout.setContentsMargins(44, 36, 44, 36)
+        layout.setSpacing(16)
+        layout.addWidget(self._page_header(
+            "Gesture Recorder",
+            "Record one-second motion landmark samples that can become reusable no-code gesture profiles.",
+        ))
+
+        panel = QFrame()
+        panel.setObjectName("PanelCard")
+        panel_layout = QVBoxLayout(panel)
+        panel_layout.setContentsMargins(18, 18, 18, 18)
+        panel_layout.setSpacing(12)
+        panel_layout.addWidget(self._small_label("Record Motion Sample", "CardTitle"))
+        instructions = self._small_label(
+            "Launch Meme Reactions in Motion or Mixed mode first. Then enter a snake_case id, press record, wait for 3 2 1, and perform the movement once.",
+            "MutedText",
+        )
+        instructions.setWordWrap(True)
+        panel_layout.addWidget(instructions)
+
+        self.motion_gesture_id_input = QLineEdit("my_motion_gesture")
+        self.motion_gesture_id_input.setPlaceholderText("snake_case id, e.g. arm_wave_side")
+        panel_layout.addWidget(self._field_row("Gesture ID", self.motion_gesture_id_input))
+
+        self.record_motion_button = QPushButton("Record Motion Sample")
+        self.record_motion_button.setObjectName("PrimaryButton")
+        self.record_motion_button.clicked.connect(self._start_motion_recording_countdown)
+        actions = QHBoxLayout()
+        actions.addWidget(self.record_motion_button)
+        actions.addStretch()
+        panel_layout.addLayout(actions)
+
+        self.recorder_status_label = self._small_label(
+            "Status: launch a Motion or Mixed session before recording.",
+            "MutedText",
+        )
+        self.recorder_status_label.setWordWrap(True)
+        panel_layout.addWidget(self.recorder_status_label)
+        layout.addWidget(panel)
+
+        saved_panel = QFrame()
+        saved_panel.setObjectName("PanelCard")
+        saved_layout = QVBoxLayout(saved_panel)
+        saved_layout.setContentsMargins(18, 18, 18, 18)
+        saved_layout.setSpacing(8)
+        saved_layout.addWidget(self._small_label("Saved Location", "CardTitle"))
+        saved_layout.addWidget(self._small_label("configs/gestures/motion/<gesture_id>.json", "CodeText"))
+        note = self._small_label(
+            "Restart the camera session after recording so the profile engine loads the new JSON profile.",
+            "TinyText",
+        )
+        note.setWordWrap(True)
+        saved_layout.addWidget(note)
+        layout.addWidget(saved_panel)
         layout.addStretch()
         return page
 
@@ -833,28 +886,34 @@ class MainWindow(QMainWindow):
 
     def _start_motion_recording_countdown(self) -> None:
         if self.camera_worker is None or not self.camera_worker.isRunning():
+            self._set_recorder_status("Status: start a Meme Reactions session first.")
             self._add_timeline_event("Gesture recording requires a running Meme Reactions session")
             return
         if self.camera_worker.reaction_mode not in {"motion", "mixed"}:
+            self._set_recorder_status("Status: use Motion only or Mixed mode before recording.")
             self._add_timeline_event("Switch Meme Reactions to Motion or Mixed before recording")
             return
         gesture_id = self._normalize_trigger(self.motion_gesture_id_input.text() if self.motion_gesture_id_input else "")
         if not gesture_id:
+            self._set_recorder_status("Status: enter a gesture id first.")
             self._add_timeline_event("Gesture recording skipped: enter a gesture id")
             return
         self.gesture_recorder = GestureSampleRecorder(gesture_id=gesture_id, kind="motion")
         self.record_countdown_remaining = 3
         if self.record_motion_button is not None:
             self.record_motion_button.setEnabled(False)
+        self._set_recorder_status("Status: countdown started. Get ready.")
         self._run_recording_countdown()
 
     def _run_recording_countdown(self) -> None:
         if self.record_countdown_remaining > 0:
+            self._set_recorder_status(f"Status: recording starts in {self.record_countdown_remaining}.")
             self._add_timeline_event(f"Gesture recording starts in {self.record_countdown_remaining}")
             self.record_countdown_remaining -= 1
             QTimer.singleShot(1000, self._run_recording_countdown)
             return
         self.recording_deadline = 0.0
+        self._set_recorder_status("Status: recording for 1 second. Perform the gesture now.")
         self._add_timeline_event("Recording motion sample for 1 second")
 
     def _on_tracking_sample_ready(
@@ -878,11 +937,18 @@ class MainWindow(QMainWindow):
             return
         sample_count = len(self.gesture_recorder.samples)
         output_path = self.gesture_recorder.save(self.project_root)
+        self._set_recorder_status(
+            f"Status: saved {output_path.name} with {sample_count} samples. Restart the session to use it."
+        )
         self._add_timeline_event(f"Saved gesture sample: {output_path.name} ({sample_count} samples)")
         self.gesture_recorder = None
         self.recording_deadline = None
         if self.record_motion_button is not None:
             self.record_motion_button.setEnabled(True)
+
+    def _set_recorder_status(self, message: str) -> None:
+        if self.recorder_status_label is not None:
+            self.recorder_status_label.setText(message)
 
     def _save_screenshot(self) -> None:
         if self.last_frame_image is None:

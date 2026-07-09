@@ -66,7 +66,7 @@ The first slice records one 1-second motion sample after a `3 2 1` countdown. La
 To record a motion sample:
 
 1. Launch `Meme Reactions` in `Motion only` or `Mixed`.
-2. Open `Session Console`.
+2. Open `Gesture Recorder` from the sidebar.
 3. Enter a lowercase snake_case gesture id.
 4. Click `Record Motion Sample`.
 5. Perform the gesture after the countdown.
