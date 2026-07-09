@@ -1,0 +1,14 @@
+[
+  {
+    "id": "chewing_meme",
+    "name": "chewing_meme",
+    "asset": "local_assets/memes/motion/chewing_meme.gif",
+    "sound": null,
+    "input_type": "face",
+    "triggers": [
+      "open_mouth"
+    ],
+    "cooldown_seconds": 1.0,
+    "category": "reaction"
+  }
+]

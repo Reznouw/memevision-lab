@@ -136,7 +136,9 @@ class MainWindow(QMainWindow):
         self.output_count_input: QSpinBox | None = None
         self.motion_gesture_id_input: QLineEdit | None = None
         self.start_motion_session_button: QPushButton | None = None
+        self.stop_recorder_camera_button: QPushButton | None = None
         self.record_motion_button: QPushButton | None = None
+        self.attach_meme_button: QPushButton | None = None
         self.recorder_status_label: QLabel | None = None
         self.record_countdown_remaining = 0
         self.recording_deadline: float | None = None
@@ -461,7 +463,11 @@ class MainWindow(QMainWindow):
             }
             self._update_meme_selection_status()
 
-    def _open_add_meme_dialog(self) -> None:
+    def _open_add_meme_dialog(
+        self,
+        default_trigger: str | None = None,
+        default_input_type: str | None = None,
+    ) -> None:
         dialog = QDialog(self)
         dialog.setWindowTitle("Add Meme")
         dialog.resize(560, 460)
@@ -483,13 +489,13 @@ class MainWindow(QMainWindow):
         trigger_input.setEditable(True)
         for trigger in self._known_triggers():
             trigger_input.addItem(trigger)
-        trigger_input.setCurrentText(self._default_trigger_for_mode(self._selected_reaction_mode()))
+        trigger_input.setCurrentText(default_trigger or self._default_trigger_for_mode(self._selected_reaction_mode()))
 
         type_select = QComboBox()
         type_select.addItem("Hand", "hand")
         type_select.addItem("Face", "face")
         type_select.addItem("Motion", "motion")
-        mode = self._selected_reaction_mode()
+        mode = default_input_type or self._selected_reaction_mode()
         if mode in {"hand", "face", "motion"}:
             type_select.setCurrentIndex(type_select.findData(mode))
 
@@ -722,17 +728,25 @@ class MainWindow(QMainWindow):
         self.start_motion_session_button = QPushButton("Start Motion Session")
         self.start_motion_session_button.setObjectName("SecondaryButton")
         self.start_motion_session_button.clicked.connect(self._start_motion_session_for_recorder)
+        self.stop_recorder_camera_button = QPushButton("Stop Camera")
+        self.stop_recorder_camera_button.setObjectName("SecondaryButton")
+        self.stop_recorder_camera_button.clicked.connect(self._stop_recorder_camera)
         self.record_motion_button = QPushButton("Record Motion Sample")
         self.record_motion_button.setObjectName("PrimaryButton")
         self.record_motion_button.clicked.connect(self._start_motion_recording_countdown)
+        self.attach_meme_button = QPushButton("Attach Meme To This Gesture")
+        self.attach_meme_button.setObjectName("SecondaryButton")
+        self.attach_meme_button.clicked.connect(self._attach_meme_to_recorded_gesture)
         actions = QHBoxLayout()
         actions.addWidget(self.start_motion_session_button)
+        actions.addWidget(self.stop_recorder_camera_button)
         actions.addWidget(self.record_motion_button)
+        actions.addWidget(self.attach_meme_button)
         actions.addStretch()
         panel_layout.addLayout(actions)
 
         self.recorder_status_label = self._small_label(
-            "Status: launch a Motion or Mixed session before recording.",
+            "Status: start the recorder camera before recording.",
             "MutedText",
         )
         self.recorder_status_label.setWordWrap(True)
@@ -853,6 +867,18 @@ class MainWindow(QMainWindow):
         self._set_recorder_status("Status: camera-only recorder session started. Press Record Motion Sample when ready.")
         self._add_timeline_event("Started Gesture Recorder camera session")
 
+    def _stop_recorder_camera(self) -> None:
+        self._stop_session()
+        self._set_recorder_status("Status: recorder camera stopped.")
+        self._add_timeline_event("Stopped Gesture Recorder camera session")
+
+    def _attach_meme_to_recorded_gesture(self) -> None:
+        gesture_id = self._normalize_trigger(self.motion_gesture_id_input.text() if self.motion_gesture_id_input else "")
+        if not gesture_id:
+            self._set_recorder_status("Status: enter a gesture id before attaching a meme.")
+            return
+        self._open_add_meme_dialog(default_trigger=gesture_id, default_input_type="motion")
+
     def _present_stream_windows(self) -> None:
         if self.camera_window is not None:
             self.camera_window.present_above_others()
@@ -947,12 +973,12 @@ class MainWindow(QMainWindow):
 
     def _start_motion_recording_countdown(self) -> None:
         if self.camera_worker is None or not self.camera_worker.isRunning():
-            self._set_recorder_status("Status: start a Meme Reactions session first.")
-            self._add_timeline_event("Gesture recording requires a running Meme Reactions session")
+            self._set_recorder_status("Status: start the recorder camera first.")
+            self._add_timeline_event("Gesture recording requires the recorder camera")
             return
         if self.camera_worker.reaction_mode not in {"motion", "mixed"}:
-            self._set_recorder_status("Status: use Motion only or Mixed mode before recording.")
-            self._add_timeline_event("Switch Meme Reactions to Motion or Mixed before recording")
+            self._set_recorder_status("Status: recorder camera must run in Motion mode.")
+            self._add_timeline_event("Gesture recording skipped: recorder camera is not in Motion mode")
             return
         gesture_id = self._normalize_trigger(self.motion_gesture_id_input.text() if self.motion_gesture_id_input else "")
         if not gesture_id:
@@ -1084,7 +1110,24 @@ class MainWindow(QMainWindow):
 
     def _known_triggers(self) -> list[str]:
         triggers = {trigger for meme in self.meme_choices for trigger in meme.triggers}
+        triggers.update(self._recorded_gesture_triggers())
         return sorted(triggers)
+
+    def _recorded_gesture_triggers(self) -> set[str]:
+        triggers: set[str] = set()
+        gestures_dir = self.project_root / "configs" / "gestures"
+        for config_path in gestures_dir.glob("*/*.json"):
+            gesture_id = config_path.stem
+            try:
+                payload = json.loads(config_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                payload = {}
+            if isinstance(payload, dict):
+                gesture_id = str(payload.get("gesture_id") or gesture_id)
+            normalized = self._normalize_trigger(gesture_id)
+            if normalized:
+                triggers.add(normalized)
+        return triggers
 
     def _default_trigger_for_mode(self, mode: str) -> str:
         defaults = {

@@ -35,8 +35,24 @@ def test_gesture_recorder_page_has_start_and_record_controls(tmp_path):
     try:
         assert window.stack.count() == 4
         assert window.start_motion_session_button is not None
+        assert window.stop_recorder_camera_button is not None
         assert window.record_motion_button is not None
+        assert window.attach_meme_button is not None
         assert window.motion_gesture_id_input is not None
+    finally:
+        window.close()
+        app.processEvents()
+
+
+def test_known_triggers_include_recorded_motion_gestures(tmp_path):
+    _write_meme_config(tmp_path, "thumbs_up", "existing", "hand")
+    _write_motion_gesture(tmp_path, "chewing")
+    _write_plugin_manifest(tmp_path)
+    app = QApplication.instance() or QApplication([])
+    window = MainWindow(PluginManager(tmp_path / "plugins"))
+
+    try:
+        assert "chewing" in window._known_triggers()
     finally:
         window.close()
         app.processEvents()
@@ -126,6 +142,15 @@ def _write_meme_config(root, trigger: str, meme_id: str, input_type: str) -> Non
                 }
             ]
         ),
+        encoding="utf-8",
+    )
+
+
+def _write_motion_gesture(root, gesture_id: str) -> None:
+    config_dir = root / "configs" / "gestures" / "motion"
+    config_dir.mkdir(parents=True)
+    (config_dir / f"{gesture_id}.json").write_text(
+        json.dumps({"gesture_id": gesture_id, "kind": "motion", "samples": []}),
         encoding="utf-8",
     )
 
