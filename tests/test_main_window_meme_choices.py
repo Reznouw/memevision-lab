@@ -57,6 +57,45 @@ def test_append_meme_entry_and_reload_selects_new_meme(tmp_path):
         app.processEvents()
 
 
+def test_prepare_local_media_copies_external_file_to_local_assets(tmp_path):
+    _write_meme_config(tmp_path, "thumbs_up", "existing", "hand")
+    _write_plugin_manifest(tmp_path)
+    external_file = tmp_path / "downloads" / "funny.gif"
+    external_file.parent.mkdir()
+    external_file.write_bytes(b"gif-bytes")
+    app = QApplication.instance() or QApplication([])
+    window = MainWindow(PluginManager(tmp_path / "plugins"))
+
+    try:
+        relative_path = window._prepare_local_media(external_file, "hand", "memes", "Funny Meme")
+        copied_file = tmp_path / relative_path
+
+        assert relative_path == "local_assets/memes/hands/funny_meme.gif"
+        assert copied_file.read_bytes() == b"gif-bytes"
+    finally:
+        window.close()
+        app.processEvents()
+
+
+def test_prepare_local_media_keeps_existing_local_asset_path(tmp_path):
+    _write_meme_config(tmp_path, "thumbs_up", "existing", "hand")
+    _write_plugin_manifest(tmp_path)
+    local_file = tmp_path / "local_assets" / "memes" / "hands" / "existing.gif"
+    local_file.parent.mkdir(parents=True)
+    local_file.write_bytes(b"gif-bytes")
+    app = QApplication.instance() or QApplication([])
+    window = MainWindow(PluginManager(tmp_path / "plugins"))
+
+    try:
+        relative_path = window._prepare_local_media(local_file, "hand", "memes", "Other Name")
+
+        assert relative_path == "local_assets/memes/hands/existing.gif"
+        assert not (tmp_path / "local_assets" / "memes" / "hands" / "other_name.gif").exists()
+    finally:
+        window.close()
+        app.processEvents()
+
+
 def _write_meme_config(root, trigger: str, meme_id: str, input_type: str) -> None:
     config_dir = root / "configs" / "memes" / "by_trigger"
     config_dir.mkdir(parents=True)

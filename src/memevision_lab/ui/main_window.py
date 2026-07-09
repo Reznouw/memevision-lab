@@ -438,7 +438,7 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(self._small_label("Add Meme To Trigger", "CardTitle"))
         hint = self._small_label(
-            "Use an existing trigger or type a new one. Put assets in local_assets/ for portable configs.",
+            "Choose any local GIF/image/audio file. MemeVision copies it into local_assets/ and saves a portable config path.",
             "MutedText",
         )
         hint.setWordWrap(True)
@@ -512,11 +512,17 @@ class MainWindow(QMainWindow):
                     return
 
             meme_id = self._unique_meme_id(self._slugify(name))
+            asset = self._prepare_local_media(asset_path, input_type, "memes", meme_id)
+            sound = (
+                self._prepare_local_media(sound_path, input_type, "sounds", meme_id)
+                if sound_path is not None
+                else None
+            )
             entry = {
                 "id": meme_id,
                 "name": name,
-                "asset": self._project_relative_path(asset_path),
-                "sound": self._project_relative_path(sound_path) if sound_path is not None else None,
+                "asset": asset,
+                "sound": sound,
                 "input_type": input_type,
                 "cooldown_seconds": cooldown_input.value(),
                 "category": category_input.text().strip() or "reaction",
@@ -899,6 +905,42 @@ class MainWindow(QMainWindow):
             return path.resolve().relative_to(self.project_root.resolve()).as_posix()
         except ValueError:
             return str(path)
+
+    def _prepare_local_media(
+        self,
+        source_path: Path,
+        input_type: str,
+        media_kind: str,
+        base_name: str,
+    ) -> str:
+        source_path = source_path.resolve()
+        local_root = (self.project_root / "local_assets").resolve()
+        try:
+            source_path.relative_to(local_root)
+            return self._project_relative_path(source_path)
+        except ValueError:
+            pass
+
+        type_folder = {
+            "hand": "hands",
+            "face": "face",
+            "motion": "motion",
+        }.get(input_type, input_type)
+        destination_dir = self.project_root / "local_assets" / media_kind / type_folder
+        destination_dir.mkdir(parents=True, exist_ok=True)
+        destination = self._unique_media_destination(destination_dir, base_name, source_path.suffix)
+        shutil.copy2(source_path, destination)
+        return self._project_relative_path(destination)
+
+    def _unique_media_destination(self, destination_dir: Path, base_name: str, suffix: str) -> Path:
+        safe_base = self._slugify(base_name)
+        normalized_suffix = suffix.lower() or ".bin"
+        candidate = destination_dir / f"{safe_base}{normalized_suffix}"
+        index = 2
+        while candidate.exists():
+            candidate = destination_dir / f"{safe_base}_{index}{normalized_suffix}"
+            index += 1
+        return candidate
 
     def _append_meme_entry(self, trigger: str, entry: dict[str, object]) -> None:
         config_dir = self.project_root / "configs" / "memes" / "by_trigger"

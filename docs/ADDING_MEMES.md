@@ -20,6 +20,8 @@ configs/memes/by_trigger/<trigger>.json
 
 It then refreshes the selection list without restarting.
 
+If the asset or sound is outside the project folder, the app copies it into `local_assets/` automatically and stores a relative path. This keeps local configs portable without exposing private absolute paths.
+
 ## Pick A Trigger
 
 Memes are grouped by trigger name:
@@ -40,7 +42,7 @@ If the trigger file already exists, add your meme to that JSON array. If it does
 
 ## Add The Asset
 
-Put local files here:
+When using `Add Meme`, files are copied here automatically. When editing JSON manually, put local files here:
 
 ```text
 local_assets/memes/hands/    static hand gesture GIF/PNG/JPG/WEBP

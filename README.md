@@ -151,7 +151,7 @@ See `docs/ADDING_MEMES.md` for meme contributions and `docs/CONTRIBUTING_CODE.md
 
 The `Meme Reactions` card also includes `Add Meme`, which writes a new entry to `configs/memes/by_trigger/<trigger>.json` from inside the app.
 
-The public repository intentionally does not include meme GIFs or sounds. If a configured asset is missing, the app shows a clear placeholder instead of failing. Add your own local files under `local_assets/` to enable the real meme output.
+The public repository intentionally does not include meme GIFs or sounds. If a configured asset is missing, the app shows a clear placeholder instead of failing. Add your own files with `Add Meme`; the app copies them into `local_assets/` and keeps configs portable.
 
 ## Why PySide6?
 
