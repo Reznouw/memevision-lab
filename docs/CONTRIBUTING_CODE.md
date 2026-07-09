@@ -11,6 +11,16 @@ Use this guide when a change needs Python code instead of only JSON/assets.
 - `src/memevision_lab/ui/main_window.py`: launcher UI and runtime windows.
 - `plugins/`: catalog mini-projects.
 
+## Before Touching Code
+
+Try these no-code paths first:
+
+- Add a meme to an existing trigger: `docs/CONTRIBUTING_MEMES.md`.
+- Create a catalog mini-project: `docs/CREATING_PLUGINS.md`.
+- Reuse an existing trigger: `docs/TRIGGERS.md`.
+
+Touch Python only when the current trigger/profile/plugin contract cannot express the behavior.
+
 ## Adding A New Trigger In Code
 
 1. Decide the trigger name, for example `finger_snap`.
@@ -21,6 +31,8 @@ Use this guide when a change needs Python code instead of only JSON/assets.
 
 ```powershell
 .\.venv312\Scripts\python.exe -m compileall "src" "plugins" "scripts"
+.\.venv312\Scripts\python.exe -m pytest -q
+.\.venv312\Scripts\python.exe -m ruff check "src" "tests"
 ```
 
 ## Motion Gesture Guidance
@@ -55,5 +67,6 @@ The recorder should capture several 1-second samples after a `3 2 1` countdown a
 
 - Keep changes minimal and focused.
 - Do not block the camera frame loop.
-- Do not commit private/copyrighted media.
+- Do not commit private/copyrighted media. Only commit media with redistribution rights.
 - Keep user-editable behavior in JSON where practical.
+- Add or update tests when changing a detector, trigger matcher, loader, or UI helper.

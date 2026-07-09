@@ -9,24 +9,24 @@ new mini-projects by dropping plugin folders into `plugins/`.
 
 ## Current Status
 
-Phase 3 vision tracking is in progress:
+Current alpha status:
 
 - PySide6 desktop shell
 - Dark QSS theme
 - Home, project catalog, and session console screens
 - Plugin manifest discovery
 - Starter `meme_reactions` plugin
-- Initial meme config example
+- Meme configs organized by trigger under `configs/memes/by_trigger/`
 - OpenCV camera worker launched from the catalog
 - Separate Camera and Meme Output windows for live sessions
 - Screenshot capture from the session console into `captures/`
 - Optional MediaPipe hand tracking when the `vision` extra is installed
 - Basic hand gesture labels: `peace`, `pointing`, `thumbs_up`, `open_palm`, and `fist`
-- Meme reaction engine with cooldowns from trigger configs under `configs/memes/by_trigger/`
+- Meme reaction engine with cooldowns from trigger configs
 - Local image/GIF output in the separate Meme Output window
 - Optional local audio playback for meme reactions
 
-Face and motion tracking are available as starter rules; richer per-plugin effects and a no-code gesture recorder are next phases.
+Face and motion tracking are available as starter rules; richer per-plugin effects, Gesture Recorder, and profile-driven gesture configs are next phases.
 
 ## Install For Development
 
@@ -147,11 +147,16 @@ Recommended organization:
 - `local_assets/sounds/face/` for face-triggered MP3/WAV/OGG files.
 - `local_assets/sounds/motion/` for movement-triggered MP3/WAV/OGG files.
 
-See `docs/ADDING_MEMES.md` for meme contributions and `docs/CONTRIBUTING_CODE.md` for code-level trigger changes.
+Contributor guides:
+
+- `docs/CONTRIBUTING_MEMES.md`: add memes safely.
+- `docs/TRIGGERS.md`: existing trigger names and meanings.
+- `docs/CREATING_PLUGINS.md`: create catalog mini-projects from `templates/plugin/`.
+- `docs/CONTRIBUTING_CODE.md`: change detectors, trigger engines, UI, or core behavior.
 
 The `Meme Reactions` card also includes `Add Meme`, which writes a new entry to `configs/memes/by_trigger/<trigger>.json` from inside the app.
 
-The public repository intentionally does not include meme GIFs or sounds. If a configured asset is missing, the app shows a clear placeholder instead of failing. Add your own files with `Add Meme`; the app copies them into `local_assets/` and keeps configs portable.
+The public repository includes a starter set of redistributable meme assets. If a configured asset is missing, the app shows a clear placeholder instead of failing. Add your own files with `Add Meme`; the app copies them into `local_assets/` and keeps configs portable.
 
 ## Why PySide6?
 
@@ -167,8 +172,9 @@ The main app discovers plugins automatically and displays them in the catalog.
 
 See `docs/CREATING_PLUGINS.md` for the plugin contract.
 
+Starter files are available in `templates/plugin/`.
+
 ## Asset Policy
 
 Do not commit copyrighted meme GIFs, audio, or images directly unless they are
-licensed for redistribution. The repository should ship placeholders and examples;
-users can add personal assets under `local_assets/`.
+licensed for redistribution. Personal classroom-only assets should stay local.

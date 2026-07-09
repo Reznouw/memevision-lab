@@ -1,0 +1,12 @@
+{
+  "id": "my_plugin",
+  "name": "My Plugin",
+  "description": "Short description shown in the MemeVision Lab catalog.",
+  "category": "effects",
+  "author": "Your Name",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": null,
+  "required_trackers": ["hands"],
+  "tags": ["camera", "example"]
+}

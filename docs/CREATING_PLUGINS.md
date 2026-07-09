@@ -12,6 +12,14 @@ plugins/my_plugin/
   README.md
 ```
 
+Copy the starter template from:
+
+```text
+templates/plugin/
+```
+
+Then rename the folder and update `manifest.json`.
+
 ## Manifest
 
 ```json
@@ -55,8 +63,11 @@ hands, face, pose, and gesture results once the vision core is implemented.
 - Do not open your own camera if the shared camera service is available.
 - Do not commit copyrighted assets unless redistribution is allowed.
 - Keep plugin configuration in JSON where possible.
+- Use lowercase snake_case for plugin folder names and `id` values.
+- Keep plugins self-contained under `plugins/<plugin_id>/`.
 
 ## Related Guides
 
 - Add meme assets and trigger JSON: `docs/ADDING_MEMES.md`.
+- Meme contribution checklist: `docs/CONTRIBUTING_MEMES.md`.
 - Change gesture detection or core behavior: `docs/CONTRIBUTING_CODE.md`.

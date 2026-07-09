@@ -2,6 +2,8 @@
 
 MemeVision Lab lets contributors add memes without touching Python code.
 
+For the full pull request checklist, see `docs/CONTRIBUTING_MEMES.md`.
+
 ## Add From The App
 
 The easiest path is inside the launcher:
@@ -86,6 +88,8 @@ Use one of:
 - Hands: `thumbs_up`, `peace`, `pointing`, `open_palm`, `fist`.
 - Face: `neutral_face`, `open_mouth`, `look_side`, `closed_eyes`, `serious_face`.
 - Motion: `head_shake`, `scuba_wave_side`, `two_hand_palm_bounce`.
+
+See `docs/TRIGGERS.md` for the full trigger reference.
 
 ## Asset Policy
 
