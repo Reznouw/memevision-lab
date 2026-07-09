@@ -1,0 +1,12 @@
+{
+  "id": "brick_breaker",
+  "name": "Brick Breaker",
+  "description": "Control a paddle with your hand and break blocks in a simple webcam mini-game.",
+  "category": "games",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands"],
+  "tags": ["game", "arcade", "hands"]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "meme_reactions",
+  "name": "Meme Reactions",
+  "description": "Trigger configurable memes, GIFs, and sounds from hand gestures and face expressions.",
+  "category": "memes",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands", "face"],
+  "tags": ["memes", "gif", "gestures", "reactions"]
+}

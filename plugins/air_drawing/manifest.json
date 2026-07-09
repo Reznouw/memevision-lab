@@ -1,0 +1,12 @@
+{
+  "id": "air_drawing",
+  "name": "Air Drawing",
+  "description": "Draw on the camera feed with your index finger, switch colors, erase, and save sketches.",
+  "category": "tools",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands"],
+  "tags": ["drawing", "tools", "creative"]
+}

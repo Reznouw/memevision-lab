@@ -1,0 +1,22 @@
+[
+  {
+    "id": "bruh",
+    "name": "Bruh Moment",
+    "triggers": ["blank_stare", "neutral_face"],
+    "asset": "local_assets/memes/face/bruh.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "sound"
+  },
+  {
+    "id": "npc_wojak",
+    "name": "NPC Wojak",
+    "triggers": ["neutral_face", "no_motion"],
+    "asset": "local_assets/memes/face/npc_wojak.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 4,
+    "category": "reaction"
+  }
+]

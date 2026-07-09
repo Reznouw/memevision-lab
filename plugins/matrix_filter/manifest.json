@@ -1,0 +1,12 @@
+{
+  "id": "matrix_filter",
+  "name": "Matrix Filter",
+  "description": "Turn the camera into a green code wall when both palms face the webcam.",
+  "category": "effects",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands"],
+  "tags": ["matrix", "filter", "effects"]
+}

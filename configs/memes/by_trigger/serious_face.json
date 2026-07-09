@@ -1,0 +1,12 @@
+[
+  {
+    "id": "gigachad",
+    "name": "Gigachad",
+    "triggers": ["serious_face", "confident_pose"],
+    "asset": "local_assets/memes/face/gigachad.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 4,
+    "category": "reaction"
+  }
+]

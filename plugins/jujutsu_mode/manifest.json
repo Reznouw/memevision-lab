@@ -1,0 +1,12 @@
+{
+  "id": "jujutsu_mode",
+  "name": "Jujutsu Mode",
+  "description": "Trigger domain-style overlays, energy sparks, and dramatic anime reaction effects.",
+  "category": "anime",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands", "face"],
+  "tags": ["anime", "domain", "effects"]
+}

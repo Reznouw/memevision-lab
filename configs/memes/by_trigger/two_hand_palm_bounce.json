@@ -1,0 +1,11 @@
+[
+  {
+    "id": "tung_sahur_67",
+    "name": "Tung Sahur 67",
+    "asset": "local_assets/memes/motion/tung_sahur_67.gif",
+    "sound": null,
+    "input_type": "motion",
+    "cooldown_seconds": 3,
+    "category": "motion"
+  }
+]

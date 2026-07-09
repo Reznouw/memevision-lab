@@ -1,0 +1,20 @@
+[
+  {
+    "id": "tung_sahur",
+    "name": "Tung Sahur",
+    "asset": "local_assets/memes/hands/tung_sahur.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  },
+  {
+    "id": "puno",
+    "name": "Puno",
+    "asset": "local_assets/memes/hands/puno.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  }
+]

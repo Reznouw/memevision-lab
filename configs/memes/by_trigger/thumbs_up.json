@@ -1,0 +1,11 @@
+[
+  {
+    "id": "thumbs_up_cat",
+    "name": "Thumbs Up Cat",
+    "asset": "local_assets/memes/hands/thumbs_up_cat.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 0.8,
+    "category": "reaction"
+  }
+]

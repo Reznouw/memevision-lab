@@ -1,0 +1,11 @@
+[
+  {
+    "id": "cat_nope",
+    "name": "Cat Nope",
+    "asset": "local_assets/memes/motion/cat_nope.gif",
+    "sound": null,
+    "input_type": "motion",
+    "cooldown_seconds": 3,
+    "category": "motion"
+  }
+]

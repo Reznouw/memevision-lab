@@ -1,0 +1,11 @@
+[
+  {
+    "id": "huh_cat",
+    "name": "Huh Cat",
+    "asset": "local_assets/memes/face/huh_cat.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  }
+]

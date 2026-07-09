@@ -1,0 +1,32 @@
+[
+  {
+    "id": "macaco_peace",
+    "name": "Macaco Pointing",
+    "triggers": ["peace", "two_fingers"],
+    "asset": "local_assets/memes/hands/macaco_pointing.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 0.8,
+    "category": "reaction"
+  },
+  {
+    "id": "peace_disappear",
+    "name": "Peace Disappear",
+    "triggers": ["peace", "two_fingers"],
+    "asset": "local_assets/memes/hands/peace_disapear.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "ballerina",
+    "name": "Ballerina",
+    "triggers": ["peace", "two_fingers"],
+    "asset": "local_assets/memes/hands/ballerina.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  }
+]

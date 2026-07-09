@@ -1,0 +1,58 @@
+[
+  {
+    "id": "nothing_we_can_do",
+    "name": "Nothing We Can Do",
+    "asset": "local_assets/memes/hands/nothing_we_can_do.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "absolute_cinema",
+    "name": "Absolute Cinema",
+    "triggers": ["open_palm", "both_palms"],
+    "asset": "local_assets/memes/hands/absolute_cinema.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "let_him_cook",
+    "name": "Let Him Cook",
+    "asset": "local_assets/memes/hands/let_him_cook.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "tralalelo",
+    "name": "Tralalelo",
+    "triggers": ["open_palm", "both_palms"],
+    "asset": "local_assets/memes/hands/tralalelo.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  },
+  {
+    "id": "bombardiro",
+    "name": "Bombardiro",
+    "asset": "local_assets/memes/hands/Bombardiro.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  },
+  {
+    "id": "patapim",
+    "name": "Patapim",
+    "asset": "local_assets/memes/hands/patapim.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  }
+]

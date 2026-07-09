@@ -1,0 +1,12 @@
+{
+  "id": "virtual_piano",
+  "name": "Virtual Piano",
+  "description": "Play virtual piano strings or keys with tracked fingertips on the webcam feed.",
+  "category": "tools",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands"],
+  "tags": ["music", "piano", "hands"]
+}

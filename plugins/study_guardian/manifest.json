@@ -1,0 +1,12 @@
+{
+  "id": "study_guardian",
+  "name": "Study Guardian",
+  "description": "Detect closed eyes, head drop, absence, and distraction to trigger alerts while studying.",
+  "category": "study",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["face"],
+  "tags": ["study", "anti-sleep", "focus"]
+}

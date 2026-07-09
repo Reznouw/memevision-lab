@@ -1,0 +1,12 @@
+{
+  "id": "virtual_keyboard",
+  "name": "Virtual Keyboard",
+  "description": "Type with floating keys selected by finger position and pinch gestures.",
+  "category": "tools",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands"],
+  "tags": ["keyboard", "tools", "typing"]
+}

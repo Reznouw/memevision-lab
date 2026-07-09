@@ -1,0 +1,12 @@
+[
+  {
+    "id": "cat_blind",
+    "name": "Cat Blind",
+    "triggers": ["closed_eyes", "blank_stare"],
+    "asset": "local_assets/memes/face/cat_blind.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  }
+]

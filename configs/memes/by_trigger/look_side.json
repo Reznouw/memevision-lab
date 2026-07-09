@@ -1,0 +1,11 @@
+[
+  {
+    "id": "side_eye_dog",
+    "name": "Side Eye Dog",
+    "asset": "local_assets/memes/face/side_eye_dog.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "surprised_pikachu",
+    "name": "Surprised Pikachu",
+    "triggers": ["open_mouth", "surprised_face"],
+    "asset": "local_assets/memes/face/surprised_pikachu.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "screaming_cat",
+    "name": "Screaming Cat",
+    "triggers": ["wide_open_mouth", "open_mouth"],
+    "asset": "local_assets/memes/face/screaming_cat.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "wait_what",
+    "name": "Wait What",
+    "triggers": ["confused_face", "open_mouth"],
+    "asset": "local_assets/memes/face/wait_what.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  }
+]

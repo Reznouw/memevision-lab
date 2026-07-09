@@ -1,0 +1,12 @@
+[
+  {
+    "id": "sad_hamster",
+    "name": "Sad Hamster",
+    "triggers": ["sad_face", "looking_down"],
+    "asset": "local_assets/memes/face/sad_hamster.gif",
+    "sound": null,
+    "input_type": "face",
+    "cooldown_seconds": 4,
+    "category": "reaction"
+  }
+]

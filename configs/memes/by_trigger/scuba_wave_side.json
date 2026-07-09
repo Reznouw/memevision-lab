@@ -1,0 +1,29 @@
+[
+  {
+    "id": "scuba_fox",
+    "name": "Scuba Fox",
+    "asset": "local_assets/memes/motion/scuba_fox.gif",
+    "sound": null,
+    "input_type": "motion",
+    "cooldown_seconds": 3,
+    "category": "motion"
+  },
+  {
+    "id": "scuba_cat",
+    "name": "Scuba Cat",
+    "asset": "local_assets/memes/motion/scuba_cat.gif",
+    "sound": null,
+    "input_type": "motion",
+    "cooldown_seconds": 3,
+    "category": "motion"
+  },
+  {
+    "id": "scuba_sahur",
+    "name": "Scuba Sahur",
+    "asset": "local_assets/memes/motion/scuba_sahur.gif",
+    "sound": null,
+    "input_type": "motion",
+    "cooldown_seconds": 3,
+    "category": "motion"
+  }
+]

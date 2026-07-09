@@ -1,0 +1,38 @@
+[
+  {
+    "id": "macaco_pointing",
+    "name": "Macaco Pointing",
+    "asset": "local_assets/memes/hands/macaco_pointing.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 0.8,
+    "category": "reaction"
+  },
+  {
+    "id": "clever_pointing",
+    "name": "Clever Pointing",
+    "asset": "local_assets/memes/hands/clever_pointing.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "reaction"
+  },
+  {
+    "id": "kapuchino",
+    "name": "Kapuchino",
+    "asset": "local_assets/memes/hands/kapuchino.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  },
+  {
+    "id": "chimpanzee",
+    "name": "Chimpanzee",
+    "asset": "local_assets/memes/hands/chimpanzee.gif",
+    "sound": null,
+    "input_type": "hand",
+    "cooldown_seconds": 3,
+    "category": "brainrot"
+  }
+]

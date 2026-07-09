@@ -1,0 +1,12 @@
+{
+  "id": "anime_portal",
+  "name": "Anime Portal",
+  "description": "Create a glowing portal between both hands with particles and energy rings.",
+  "category": "anime",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["hands"],
+  "tags": ["anime", "portal", "particles"]
+}

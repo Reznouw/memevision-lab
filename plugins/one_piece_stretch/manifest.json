@@ -1,0 +1,12 @@
+{
+  "id": "one_piece_stretch",
+  "name": "One Piece Stretch",
+  "description": "Experiment with pose landmarks to create elastic arm and body warp effects.",
+  "category": "anime",
+  "author": "MemeVision Lab",
+  "version": "0.1.0",
+  "entrypoint": "plugin.py",
+  "preview": "preview.png",
+  "required_trackers": ["pose"],
+  "tags": ["anime", "body", "warp"]
+}
