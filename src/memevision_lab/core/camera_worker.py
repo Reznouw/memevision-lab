@@ -19,6 +19,7 @@ class CameraWorker(QThread):
     meme_cleared = Signal()
     error = Signal(str)
     tracking_status = Signal(str)
+    tracking_sample_ready = Signal(float, object, object, str)
     meme_triggered = Signal(str, str)
     stopped = Signal()
 
@@ -131,6 +132,7 @@ class CameraWorker(QThread):
                 last_emitted_reaction_id = ""
 
             self.frame_ready.emit(frame, fps, hand_result)
+            self.tracking_sample_ready.emit(now, hand_result, face_result, detected_gesture)
             if face_result.available:
                 self.face_ready.emit(face_result)
             frame_count += 1

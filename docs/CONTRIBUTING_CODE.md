@@ -55,13 +55,21 @@ head_shake             = nose moves left-right-left
 
 ## Future Gesture Recorder
 
-The planned no-code gesture recorder should store landmarks, not video:
+The no-code gesture recorder stores landmarks, not video:
 
 ```text
 configs/gestures/motion/<gesture_id>.json
 ```
 
-The recorder should capture several 1-second samples after a `3 2 1` countdown and derive simple features such as movement axis, hand count, range, speed, and direction changes.
+The first slice records one 1-second motion sample after a `3 2 1` countdown. Later slices should capture several samples and derive simple features such as movement axis, hand count, range, speed, and direction changes.
+
+To record a motion sample:
+
+1. Launch `Meme Reactions` in `Motion only` or `Mixed`.
+2. Open `Session Console`.
+3. Enter a lowercase snake_case gesture id.
+4. Click `Record Motion Sample`.
+5. Perform the gesture after the countdown.
 
 ## Rules
 

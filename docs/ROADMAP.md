@@ -66,3 +66,36 @@
 - Virtual Piano.
 - Brick Breaker.
 - Study Guardian.
+# Roadmap
+
+## Phase 1: Open Source Organization
+
+- Done: meme configs live in `configs/memes/by_trigger/`.
+- Done: trigger reference lives in `docs/TRIGGERS.md`.
+- Done: meme contribution checklist lives in `docs/CONTRIBUTING_MEMES.md`.
+- Done: plugin guide lives in `docs/CREATING_PLUGINS.md`.
+- Done: starter plugin template lives in `templates/plugin/`.
+
+## Phase 2: Add Meme From The App
+
+- Done: choose an existing trigger or type a new one.
+- Done: copy selected media into `local_assets/`.
+- Done: write trigger JSON automatically.
+- Done: refresh meme selection without restarting.
+
+## Phase 3: Gesture Recorder
+
+- In progress: motion sample recorder with `3 2 1` countdown.
+- In progress: saves one-second landmark samples to `configs/gestures/motion/`.
+- Next: link a recorded gesture sample to an image/audio asset.
+- Next: record multiple samples per gesture and summarize movement features.
+- Later: hands and face recorder modes.
+
+## Phase 4: Gesture Profile Engine
+
+- Planned: read gesture profiles from `configs/gestures/motion/`, `hands/`, and `face/`.
+- Planned: detect user-created gestures without touching Python code.
+
+## Phase 5: Code-Level Extensions
+
+- Documented: `docs/CONTRIBUTING_CODE.md` explains where to change detectors and engines.

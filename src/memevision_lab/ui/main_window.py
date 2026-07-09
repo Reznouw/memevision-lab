@@ -32,6 +32,9 @@ from PySide6.QtWidgets import (
 )
 
 from memevision_lab.core.camera_worker import CameraWorker
+from memevision_lab.core.face_tracker import FaceTrackingResult
+from memevision_lab.core.gesture_sample_recorder import GestureSampleRecorder
+from memevision_lab.core.hand_tracker import HandTrackingResult
 from memevision_lab.core.meme_reactions import MemeReaction, MemeReactionEngine
 from memevision_lab.core.plugin_manager import PluginManager, PluginManifest
 
@@ -112,6 +115,11 @@ class MainWindow(QMainWindow):
         self.meme_choices: list[MemeReaction] = []
         self.meme_selection_status: QLabel | None = None
         self.output_count_input: QSpinBox | None = None
+        self.motion_gesture_id_input: QLineEdit | None = None
+        self.record_motion_button: QPushButton | None = None
+        self.record_countdown_remaining = 0
+        self.recording_deadline: float | None = None
+        self.gesture_recorder: GestureSampleRecorder | None = None
 
         self.setWindowTitle("MemeVision Lab")
         self.stack = QStackedWidget()
@@ -615,6 +623,17 @@ class MainWindow(QMainWindow):
         self.debug_landmarks_toggle.stateChanged.connect(self._on_debug_landmarks_changed)
         controls_layout.addWidget(self.debug_landmarks_toggle)
 
+        recorder_row = QHBoxLayout()
+        recorder_row.addWidget(self._small_label("Motion Gesture ID", "TinyText"))
+        self.motion_gesture_id_input = QLineEdit("my_motion_gesture")
+        self.motion_gesture_id_input.setPlaceholderText("snake_case id")
+        self.record_motion_button = QPushButton("Record Motion Sample")
+        self.record_motion_button.setObjectName("SecondaryButton")
+        self.record_motion_button.clicked.connect(self._start_motion_recording_countdown)
+        recorder_row.addWidget(self.motion_gesture_id_input, 1)
+        recorder_row.addWidget(self.record_motion_button)
+        controls_layout.addLayout(recorder_row)
+
         camera_row = QHBoxLayout()
         camera_row.addWidget(self._small_label("Camera Index", "TinyText"))
         camera_row.addStretch()
@@ -705,6 +724,7 @@ class MainWindow(QMainWindow):
         self.camera_worker.meme_cleared.connect(self._on_meme_cleared)
         self.camera_worker.error.connect(self._on_camera_error)
         self.camera_worker.tracking_status.connect(self._on_tracking_status)
+        self.camera_worker.tracking_sample_ready.connect(self._on_tracking_sample_ready)
         self.camera_worker.meme_triggered.connect(self._on_meme_triggered)
         self.camera_worker.stopped.connect(self._on_camera_stopped)
         self.camera_worker.start()
@@ -756,6 +776,10 @@ class MainWindow(QMainWindow):
             self._set_metric("Hands", "Not loaded")
             self._set_metric("Gesture", "Waiting")
             self._set_metric("Meme", "None")
+        self.recording_deadline = None
+        self.gesture_recorder = None
+        if self.record_motion_button is not None:
+            self.record_motion_button.setEnabled(True)
 
     def _on_camera_frame(self, frame, fps: float, hand_result) -> None:
         if self.camera_window is not None:
@@ -806,6 +830,59 @@ class MainWindow(QMainWindow):
 
     def _on_camera_stopped(self) -> None:
         self._set_metric("Camera", "Stopped")
+
+    def _start_motion_recording_countdown(self) -> None:
+        if self.camera_worker is None or not self.camera_worker.isRunning():
+            self._add_timeline_event("Gesture recording requires a running Meme Reactions session")
+            return
+        if self.camera_worker.reaction_mode not in {"motion", "mixed"}:
+            self._add_timeline_event("Switch Meme Reactions to Motion or Mixed before recording")
+            return
+        gesture_id = self._normalize_trigger(self.motion_gesture_id_input.text() if self.motion_gesture_id_input else "")
+        if not gesture_id:
+            self._add_timeline_event("Gesture recording skipped: enter a gesture id")
+            return
+        self.gesture_recorder = GestureSampleRecorder(gesture_id=gesture_id, kind="motion")
+        self.record_countdown_remaining = 3
+        if self.record_motion_button is not None:
+            self.record_motion_button.setEnabled(False)
+        self._run_recording_countdown()
+
+    def _run_recording_countdown(self) -> None:
+        if self.record_countdown_remaining > 0:
+            self._add_timeline_event(f"Gesture recording starts in {self.record_countdown_remaining}")
+            self.record_countdown_remaining -= 1
+            QTimer.singleShot(1000, self._run_recording_countdown)
+            return
+        self.recording_deadline = 0.0
+        self._add_timeline_event("Recording motion sample for 1 second")
+
+    def _on_tracking_sample_ready(
+        self,
+        now: float,
+        hand_result: HandTrackingResult,
+        face_result: FaceTrackingResult,
+        detected_gesture: str,
+    ) -> None:
+        if self.gesture_recorder is None or self.recording_deadline is None:
+            return
+        if self.recording_deadline == 0.0:
+            self.recording_deadline = now + 1.0
+        if now <= self.recording_deadline:
+            self.gesture_recorder.add_sample(now, hand_result, face_result, detected_gesture)
+            return
+        self._finish_motion_recording()
+
+    def _finish_motion_recording(self) -> None:
+        if self.gesture_recorder is None:
+            return
+        sample_count = len(self.gesture_recorder.samples)
+        output_path = self.gesture_recorder.save(self.project_root)
+        self._add_timeline_event(f"Saved gesture sample: {output_path.name} ({sample_count} samples)")
+        self.gesture_recorder = None
+        self.recording_deadline = None
+        if self.record_motion_button is not None:
+            self.record_motion_button.setEnabled(True)
 
     def _save_screenshot(self) -> None:
         if self.last_frame_image is None:
