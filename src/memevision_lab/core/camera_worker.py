@@ -61,7 +61,9 @@ class CameraWorker(QThread):
         reaction_engine.active_input_type = self.reaction_mode
         reaction_engine.allowed_meme_ids = self.allowed_meme_ids
         asset_cache = MemeAssetCache(self.project_root)
-        motion_engine = MotionGestureEngine()
+        motion_engine = MotionGestureEngine(
+            profile_path=self.project_root / "configs" / "gestures" / "motion"
+        )
         last_emitted_reaction_id = ""
         last_valid_gesture_at = time.monotonic()
         last_valid_gesture = "none"

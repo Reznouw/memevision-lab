@@ -93,8 +93,10 @@
 
 ## Phase 4: Gesture Profile Engine
 
-- Planned: read gesture profiles from `configs/gestures/motion/`, `hands/`, and `face/`.
-- Planned: detect user-created gestures without touching Python code.
+- In progress: reads motion profiles from `configs/gestures/motion/`.
+- In progress: matches one-hand/two-hand motion range and direction changes from recorded samples.
+- Next: link profile creation to meme asset creation in one UI flow.
+- Later: add `hands/` and `face/` profile families.
 
 ## Phase 5: Code-Level Extensions
 

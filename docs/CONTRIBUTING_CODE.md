@@ -71,6 +71,8 @@ To record a motion sample:
 4. Click `Record Motion Sample`.
 5. Perform the gesture after the countdown.
 
+Restart the session after recording. Motion profiles are loaded when the camera worker starts.
+
 ## Rules
 
 - Keep changes minimal and focused.

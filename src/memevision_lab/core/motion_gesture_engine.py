@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import dataclass
+from pathlib import Path
 
 from memevision_lab.core.face_tracker import FaceTrackingResult
+from memevision_lab.core.gesture_profile_engine import GestureProfileEngine
 from memevision_lab.core.hand_tracker import HandTrackingResult
 
 
@@ -14,8 +16,9 @@ class MotionGestureResult:
 
 
 class MotionGestureEngine:
-    def __init__(self, window_seconds: float = 1.15) -> None:
+    def __init__(self, window_seconds: float = 1.15, profile_path: Path | None = None) -> None:
         self.window_seconds = window_seconds
+        self.profile_engine = GestureProfileEngine.from_config(profile_path) if profile_path else GestureProfileEngine([])
         self.hand_points: deque[tuple[float, float, float, str]] = deque()
         self.multi_hand_points: deque[tuple[float, tuple[tuple[float, float, str], ...]]] = deque()
         self.face_points: deque[tuple[float, float, float]] = deque()
@@ -43,6 +46,9 @@ class MotionGestureEngine:
             return MotionGestureResult("scuba_wave_side", 0.86)
         if self._is_two_hand_palm_bounce():
             return MotionGestureResult("two_hand_palm_bounce", 0.84)
+        profile_gesture = self.profile_engine.match(list(self.hand_points), list(self.multi_hand_points))
+        if profile_gesture is not None:
+            return MotionGestureResult(profile_gesture, 0.76)
         if self._is_palm_bounce():
             return MotionGestureResult("palm_bounce", 0.8)
         if self._is_hand_wave_side():
