@@ -31,7 +31,7 @@ class GestureEngine:
             return HandGestureResult("thumbs_up", 0.78, extended)
         if self._looks_like_fist(landmarks, extended_set):
             return HandGestureResult("fist", 0.86, extended)
-        if len(long_fingers) >= 4 and self._has_open_palm_spread(landmarks):
+        if len(long_fingers) >= 4:
             return HandGestureResult("open_palm", 0.84, extended)
         if not extended_set:
             return HandGestureResult("fist", 0.8, extended)
@@ -90,15 +90,6 @@ class GestureEngine:
             if self._distance(tip, wrist) <= self._distance(pip, wrist) * 1.12:
                 folded_count += 1
         return folded_count >= 3
-
-    def _has_open_palm_spread(self, landmarks: list[tuple[float, float, float]]) -> bool:
-        index_tip = landmarks[8]
-        pinky_tip = landmarks[20]
-        wrist = landmarks[0]
-        middle_mcp = landmarks[9]
-        hand_size = max(self._distance(wrist, middle_mcp), 0.001)
-        spread = self._distance(index_tip, pinky_tip) / hand_size
-        return spread > 1.05
 
     def _distance(self, a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
         return math.hypot(a[0] - b[0], a[1] - b[1])
