@@ -61,7 +61,7 @@ The no-code gesture recorder stores landmarks, not video:
 configs/gestures/motion/<gesture_id>.json
 ```
 
-The first slice records one 1-second motion sample after a `3 2 1` countdown. Later slices should capture several samples and derive simple features such as movement axis, hand count, range, speed, and direction changes.
+The first slice records one 3-second motion sample after a `3 2 1` countdown. Later slices should capture several samples and derive simple features such as movement axis, hand count, range, speed, and direction changes.
 
 To record a motion sample:
 

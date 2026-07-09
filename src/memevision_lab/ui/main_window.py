@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QImage, QPixmap
+from PySide6.QtGui import QColor, QFont, QImage, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -61,6 +61,7 @@ class StreamWindow(QMainWindow):
         self.image_label.setMinimumSize(240, 160)
         self.image_label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.frame_scale = 1.0
+        self.overlay_message = ""
 
         layout.addWidget(heading)
         layout.addWidget(self.image_label, 1)
@@ -77,12 +78,30 @@ class StreamWindow(QMainWindow):
         image = QImage(frame.data, width, height, bytes_per_line, image_format).copy()
         pixmap = QPixmap.fromImage(image)
         target_size = self.image_label.size() * self.frame_scale
-        self.image_label.setPixmap(
-            pixmap.scaled(target_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        )
+        scaled = pixmap.scaled(target_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        if self.overlay_message:
+            scaled = self._with_overlay(scaled, self.overlay_message)
+        self.image_label.setPixmap(scaled)
 
     def set_frame_scale(self, scale: float) -> None:
         self.frame_scale = max(0.25, min(scale, 1.6))
+
+    def set_overlay_message(self, message: str) -> None:
+        self.overlay_message = message
+
+    def _with_overlay(self, pixmap: QPixmap, message: str) -> QPixmap:
+        painted = QPixmap(pixmap)
+        painter = QPainter(painted)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.fillRect(painted.rect(), QColor(0, 0, 0, 80))
+        font = QFont()
+        font.setBold(True)
+        font.setPointSize(max(22, min(72, painted.width() // 10)))
+        painter.setFont(font)
+        painter.setPen(QColor(255, 255, 255))
+        painter.drawText(painted.rect(), Qt.AlignCenter, message)
+        painter.end()
+        return painted
 
     def present_above_others(self) -> None:
         self.setWindowFlag(Qt.WindowStaysOnTopHint, True)
@@ -121,6 +140,7 @@ class MainWindow(QMainWindow):
         self.recorder_status_label: QLabel | None = None
         self.record_countdown_remaining = 0
         self.recording_deadline: float | None = None
+        self.recording_duration_seconds = 3.0
         self.gesture_recorder: GestureSampleRecorder | None = None
 
         self.setWindowTitle("MemeVision Lab")
@@ -679,7 +699,7 @@ class MainWindow(QMainWindow):
         layout.setSpacing(16)
         layout.addWidget(self._page_header(
             "Gesture Recorder",
-            "Record one-second motion landmark samples that can become reusable no-code gesture profiles.",
+            "Record three-second motion landmark samples that can become reusable no-code gesture profiles.",
         ))
 
         panel = QFrame()
@@ -689,7 +709,7 @@ class MainWindow(QMainWindow):
         panel_layout.setSpacing(12)
         panel_layout.addWidget(self._small_label("Record Motion Sample", "CardTitle"))
         instructions = self._small_label(
-            "Launch Meme Reactions in Motion or Mixed mode first. Then enter a snake_case id, press record, wait for 3 2 1, and perform the movement once.",
+            "Start a recorder camera session, enter a snake_case id, press record, wait for 3 2 1 on the camera window, and perform the movement for 3 seconds.",
             "MutedText",
         )
         instructions.setWordWrap(True)
@@ -727,7 +747,7 @@ class MainWindow(QMainWindow):
         saved_layout.addWidget(self._small_label("Saved Location", "CardTitle"))
         saved_layout.addWidget(self._small_label("configs/gestures/motion/<gesture_id>.json", "CodeText"))
         note = self._small_label(
-            "Restart the camera session after recording so the profile engine loads the new JSON profile.",
+            "After recording, link the same Gesture ID to a Motion meme in Add Meme, then restart a Motion session to use it.",
             "TinyText",
         )
         note.setWordWrap(True)
@@ -804,18 +824,34 @@ class MainWindow(QMainWindow):
             self.showMinimized()
 
     def _start_motion_session_for_recorder(self) -> None:
-        plugin = next((item for item in self.plugins if item.id == "meme_reactions"), None)
-        if plugin is None:
-            self._set_recorder_status("Status: Meme Reactions plugin is not available.")
-            return
-        if self.meme_reactions_mode_select is not None:
-            motion_index = self.meme_reactions_mode_select.findData("motion")
-            if motion_index >= 0:
-                self.meme_reactions_mode_select.setCurrentIndex(motion_index)
-        self.selected_meme_ids = self._default_meme_ids_for_mode("motion")
-        self._update_meme_selection_status()
-        self._set_recorder_status("Status: starting Motion session. Camera windows will open.")
-        self._launch_project(plugin, after_page_index=3, minimize_after_launch=False)
+        self._stop_session()
+        self.camera_window = StreamWindow("MemeVision Gesture Recorder Camera", "Starting camera...")
+        self.camera_window.move(120, 120)
+        self.camera_window.show()
+        QTimer.singleShot(500, self.camera_window.present_above_others)
+
+        camera_index = self.camera_index_input.value()
+        self.camera_worker = CameraWorker(
+            camera_index=camera_index,
+            project_root=self.project_root,
+            parent=self,
+        )
+        self.camera_worker.debug_landmarks = True
+        self.camera_worker.reaction_mode = "motion"
+        self.camera_worker.allowed_meme_ids = set()
+        self.camera_worker.output_window_count = 0
+        self.camera_worker.frame_ready.connect(self._on_camera_frame)
+        self.camera_worker.face_ready.connect(self._on_face_result)
+        self.camera_worker.error.connect(self._on_camera_error)
+        self.camera_worker.tracking_status.connect(self._on_tracking_status)
+        self.camera_worker.tracking_sample_ready.connect(self._on_tracking_sample_ready)
+        self.camera_worker.stopped.connect(self._on_camera_stopped)
+        self.camera_worker.start()
+        self.live_status.setText("Gesture Recorder camera session running")
+        self.live_plugin.setText("Plugin: Gesture Recorder")
+        self._set_metric("Camera", f"Starting {camera_index}")
+        self._set_recorder_status("Status: camera-only recorder session started. Press Record Motion Sample when ready.")
+        self._add_timeline_event("Started Gesture Recorder camera session")
 
     def _present_stream_windows(self) -> None:
         if self.camera_window is not None:
@@ -933,13 +969,17 @@ class MainWindow(QMainWindow):
     def _run_recording_countdown(self) -> None:
         if self.record_countdown_remaining > 0:
             self._set_recorder_status(f"Status: recording starts in {self.record_countdown_remaining}.")
+            if self.camera_window is not None:
+                self.camera_window.set_overlay_message(str(self.record_countdown_remaining))
             self._add_timeline_event(f"Gesture recording starts in {self.record_countdown_remaining}")
             self.record_countdown_remaining -= 1
             QTimer.singleShot(1000, self._run_recording_countdown)
             return
         self.recording_deadline = 0.0
-        self._set_recorder_status("Status: recording for 1 second. Perform the gesture now.")
-        self._add_timeline_event("Recording motion sample for 1 second")
+        if self.camera_window is not None:
+            self.camera_window.set_overlay_message("REC")
+        self._set_recorder_status("Status: recording for 3 seconds. Perform the gesture now.")
+        self._add_timeline_event("Recording motion sample for 3 seconds")
 
     def _on_tracking_sample_ready(
         self,
@@ -951,7 +991,7 @@ class MainWindow(QMainWindow):
         if self.gesture_recorder is None or self.recording_deadline is None:
             return
         if self.recording_deadline == 0.0:
-            self.recording_deadline = now + 1.0
+            self.recording_deadline = now + self.recording_duration_seconds
         if now <= self.recording_deadline:
             self.gesture_recorder.add_sample(now, hand_result, face_result, detected_gesture)
             return
@@ -968,6 +1008,9 @@ class MainWindow(QMainWindow):
         self._add_timeline_event(f"Saved gesture sample: {output_path.name} ({sample_count} samples)")
         self.gesture_recorder = None
         self.recording_deadline = None
+        if self.camera_window is not None:
+            self.camera_window.set_overlay_message("Saved")
+            QTimer.singleShot(1200, lambda: self.camera_window.set_overlay_message("") if self.camera_window else None)
         if self.record_motion_button is not None:
             self.record_motion_button.setEnabled(True)
 

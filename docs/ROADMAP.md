@@ -86,7 +86,7 @@
 ## Phase 3: Gesture Recorder
 
 - In progress: motion sample recorder with `3 2 1` countdown.
-- In progress: saves one-second landmark samples to `configs/gestures/motion/`.
+- In progress: saves three-second landmark samples to `configs/gestures/motion/`.
 - Done: recorder controls live in a dedicated `Gesture Recorder` sidebar section.
 - Done: `Gesture Recorder` can start a Motion session directly.
 - Next: link a recorded gesture sample to an image/audio asset.
