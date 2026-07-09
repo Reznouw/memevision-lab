@@ -116,6 +116,7 @@ class MainWindow(QMainWindow):
         self.meme_selection_status: QLabel | None = None
         self.output_count_input: QSpinBox | None = None
         self.motion_gesture_id_input: QLineEdit | None = None
+        self.start_motion_session_button: QPushButton | None = None
         self.record_motion_button: QPushButton | None = None
         self.recorder_status_label: QLabel | None = None
         self.record_countdown_remaining = 0
@@ -698,10 +699,14 @@ class MainWindow(QMainWindow):
         self.motion_gesture_id_input.setPlaceholderText("snake_case id, e.g. arm_wave_side")
         panel_layout.addWidget(self._field_row("Gesture ID", self.motion_gesture_id_input))
 
+        self.start_motion_session_button = QPushButton("Start Motion Session")
+        self.start_motion_session_button.setObjectName("SecondaryButton")
+        self.start_motion_session_button.clicked.connect(self._start_motion_session_for_recorder)
         self.record_motion_button = QPushButton("Record Motion Sample")
         self.record_motion_button.setObjectName("PrimaryButton")
         self.record_motion_button.clicked.connect(self._start_motion_recording_countdown)
         actions = QHBoxLayout()
+        actions.addWidget(self.start_motion_session_button)
         actions.addWidget(self.record_motion_button)
         actions.addStretch()
         panel_layout.addLayout(actions)
@@ -731,7 +736,12 @@ class MainWindow(QMainWindow):
         layout.addStretch()
         return page
 
-    def _launch_project(self, plugin: PluginManifest) -> None:
+    def _launch_project(
+        self,
+        plugin: PluginManifest,
+        after_page_index: int = 2,
+        minimize_after_launch: bool = True,
+    ) -> None:
         if plugin.id != "meme_reactions":
             self._add_timeline_event(f"Concept selected: {plugin.name}")
             self.stack.setCurrentIndex(2)
@@ -789,8 +799,23 @@ class MainWindow(QMainWindow):
         self._add_timeline_event(
             f"Launched {plugin.name} in {reaction_mode} mode with {len(selected_meme_ids)} memes and {output_count} outputs"
         )
-        self.stack.setCurrentIndex(2)
-        self.showMinimized()
+        self.stack.setCurrentIndex(after_page_index)
+        if minimize_after_launch:
+            self.showMinimized()
+
+    def _start_motion_session_for_recorder(self) -> None:
+        plugin = next((item for item in self.plugins if item.id == "meme_reactions"), None)
+        if plugin is None:
+            self._set_recorder_status("Status: Meme Reactions plugin is not available.")
+            return
+        if self.meme_reactions_mode_select is not None:
+            motion_index = self.meme_reactions_mode_select.findData("motion")
+            if motion_index >= 0:
+                self.meme_reactions_mode_select.setCurrentIndex(motion_index)
+        self.selected_meme_ids = self._default_meme_ids_for_mode("motion")
+        self._update_meme_selection_status()
+        self._set_recorder_status("Status: starting Motion session. Camera windows will open.")
+        self._launch_project(plugin, after_page_index=3, minimize_after_launch=False)
 
     def _present_stream_windows(self) -> None:
         if self.camera_window is not None:

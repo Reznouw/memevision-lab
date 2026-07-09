@@ -26,6 +26,22 @@ def test_meme_choices_include_missing_assets_and_label_them(tmp_path):
         app.processEvents()
 
 
+def test_gesture_recorder_page_has_start_and_record_controls(tmp_path):
+    _write_meme_config(tmp_path, "head_shake", "motion_meme", "motion")
+    _write_plugin_manifest(tmp_path)
+    app = QApplication.instance() or QApplication([])
+    window = MainWindow(PluginManager(tmp_path / "plugins"))
+
+    try:
+        assert window.stack.count() == 4
+        assert window.start_motion_session_button is not None
+        assert window.record_motion_button is not None
+        assert window.motion_gesture_id_input is not None
+    finally:
+        window.close()
+        app.processEvents()
+
+
 def test_append_meme_entry_and_reload_selects_new_meme(tmp_path):
     _write_meme_config(tmp_path, "thumbs_up", "existing", "hand")
     _write_plugin_manifest(tmp_path)
