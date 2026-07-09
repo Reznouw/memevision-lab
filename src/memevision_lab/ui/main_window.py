@@ -789,7 +789,7 @@ class MainWindow(QMainWindow):
             return
 
         self._stop_session()
-        self._open_code_editor(plugin.path)
+        self._open_code_editor(self.project_root)
         self.camera_window = StreamWindow("MemeVision Camera", "Starting camera...")
         output_count = self._selected_output_count()
         self.meme_windows = [
